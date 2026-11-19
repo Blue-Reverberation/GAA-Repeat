@@ -2,18 +2,7 @@ import re
 import Bio
 from Bio import SeqIO
 
-## Todo
-# 1. 
-#
-#
-
-## Flowchart
-# Take input sequence, find pure runs and list coordinates
-# Append coordinates if distance between them < max_gap
-# 
-
-
-test_data = SeqIO.read("/home/nerd/Documents/College/Python/GAA-Repeat/test-data/10-gap.fasta", "fasta") # Import data
+test_data = SeqIO.read("/home/nerd/Documents/College/Python/GAA-Repeat/test-data/variant-unit.fasta", "fasta") # Import data
 test_sequence = str(test_data.seq) # Convert relevant object to string
 
 
@@ -27,49 +16,57 @@ def indexed_match(motif, sequence): # Function to find motifs & locations
 match_list = indexed_match("(?:GAA)+", test_sequence)
 
 #print(match_list) # [(0,15), (25,40)]
-longer_sample = [(5,10), (15,20), (30,40), (50,60), (70,80), (90,100), (110,120), (130,140), (150,160), (170,180), (800,900)]
 
-## Todo
-# 1. Record span as well as start and end coordinates
-# 2. Record interruption coordinates and save to a separate list
-# 3. Count number of units in each tract
-# 4. Record longest running pure run in each tract
-# 5. Create dictionary storing this data and return that rather than tracts list
-def build_tract_dict(runs, sequence):
-    
+def tract_builder(runs, sequence): # Builds tracts 
+    interruptions = [] #Initialise empty list
+    for (_, previous_end), (next_start, _) in zip(runs, runs[1:]): # Unpacking relevant start/end data in neighbouring runs
+
+        length = next_start - previous_end # Calculate interruption length
+
+        # Defining what should go inside the interruptions dictionary
+        interruptions.append({
+            "start": previous_end,
+            "end": next_start,
+            "length": length,
+            "sequence": sequence[previous_end:next_start],
+            "multiple_of_3": length % 3 == 0,
+        })
+
+        start, end = runs[0][0], runs[-1][1] # Start and end of tract
+        pure_units = sum((e-s)//3 for s, e in runs) # Calculate the number of units
+
+    return {
+            "start": start,
+            "end": end,
+            "span": end - start,
+            "units": pure_units, # uninterrupted
+            "longest_run": max((e-s)//3 for s,e in runs), # The longest uninterrupted run
+            "interruptions": interruptions,
+        }
 
 
-def join_units(runs, max_gap):
-    tracts = []
-    tract_dict = [
-    ]
+def join_units(runs, max_gap, sequence):
+    ## Todo
+    # 1. min_units filter which discards current rather than appending if too short
 
-    if not runs: # Check for empty list
+    if not runs:
         return []
+
+    tracts = []
+    # Seeding the first tract with the first entry, as it has no previous run to compare 
+    # current is a list holding runs that are being built into a tract
+    current = [runs[0]] 
     
-    curr_start, curr_end = runs[0] # For first entry, set current start and end coordinates to the first entry in the list
-    print("[0] start, end:", curr_start, curr_end) # Test print to check that the first entry is being read correctly
+    for run in runs[1:]:
+        gap = run[0] - current[-1][1] # Calculate the distance between the candidate pure run to the most recent addition to the tract being built
+        if gap <= max_gap: # If the gap is within threshold,
+            current.append(run) # Append the run to the tract being built
 
-    for start, end in runs[1:]: # For each subsequent entry in the list, starting from the second entry
-        print("[>0] start, end:", start, end) 
-        gap = start - curr_end # Calculate the gap between the gap between the previous entry and the current entry
-        
-        if gap <= max_gap: # If the gap is less than or equal to the maximum gap, append the current end coordinate to the current tract
-            
-            curr_end = end # Update the current end coordinate to the end coordinate of the current entry
-            print("current end:", curr_end) # Test print to check that the current end coordinate is being updated correctly
-            print("current gap:", gap) # Test print to check that the gap is being calculated correctly
-        else:
-            tracts.append(((curr_start),(curr_end))) # Otherwise, append the current run to the list of tracts
-            print("Current tract:",tracts) # Test print to check that the current tract is being appended correctly
-            curr_end = end # And reset the current start and end coordinates to the current entry
-            curr_start = start
-            print("current start/end after gap:", curr_start, curr_end) #Test print to check that the current start and end coordinates are being reset correctly
-    tracts.append(((curr_start),(curr_end))) # Append the final run to the list of tracts
-    return tracts # Return the list of tracts
+        else: # If the candidate pure runs distance exceeds the threshold,
+            tracts.append(tract_builder(current, sequence)) # Finish the tract and build into dictionary with tract_builder()
+            current = [run] # Overwrite the old, now built track with the current run
 
-        
-        
+    tracts.append(tract_builder(current, sequence)) # Append the last track
+    return tracts
 
-test = join_units(longer_sample, 10)
-print(test) 
+test = join_units(match_list, 5, test_sequence)
