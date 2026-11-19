@@ -3,10 +3,11 @@ import Bio
 import pathlib
 import argparse
 from Bio import SeqIO
-from Bio import Seq
+from Bio.Seq import Seq
 
 
 def indexed_match(motif, sequence): # Function to find motifs & locations
+    #print("index motif:", motif)
     reglist = [] # Initialise empty list
     for m in re.finditer(motif, sequence): # For each match of a given motif in the sequence,
        #print('%02d-%02d: %s' % (m.start(), m.end(), m.group(0))) # Print the location of the match alongside the matched string
@@ -74,11 +75,7 @@ def join_units(runs, max_gap, min_units, sequence):
             
     return tracts_postfilter
 
-
-if __name__ == "__main__": # Guarding
-
-    #Parse arguments
-    def parse_args(argv=None):
+def parse_args(argv=None):
         parser = argparse.ArgumentParser(description="Find repeats of motifs in a sequence")
         parser.add_argument("fasta", help="Path to FASTA file with a single sequence")
         parser.add_argument("--motif", default="GAA", help="repeat motif (default = GAA)")
@@ -98,17 +95,38 @@ if __name__ == "__main__": # Guarding
             parser.error("--min-unit must be at least 1")
 
         return args
+
+if __name__ == "__main__": # Guarding
+
+    #Parse arguments
+    
     args = parse_args()
 
 
     test_data = SeqIO.read(args.fasta, "fasta") # Import data
     test_sequence = str(test_data.seq)          # Convert relevant object to string
     #print("sequence:", test_sequence)
-    pure_runs = indexed_match("(?:GAA)+", test_sequence)   # Create list of pure runs
-    print("runs:", pure_runs)
-    tracts = join_units(pure_runs, args.max_gap, args.min_unit, test_sequence)
-    print("tracts:", tracts)
 
-    #test = join_units(match_list, 100, 3, test_sequence)
-    #print(test)
 
+    reg_pure_runs = indexed_match("(?:"+args.motif+")+", test_sequence)   # Create list of pure runs
+    #print("runs:", pure_runs)
+    #print("args.motif:", args.motif)
+
+    reg_tracts = join_units(reg_pure_runs, args.max_gap, args.min_unit, test_sequence) # Create list of dictionaries
+    #print("tracts:", reg_tracts)
+
+    # Repeat steps for complementary motif
+    reverse_comp_motif = str(Seq(args.motif).reverse_complement())    
+    #print("complementary motif:", reverse_comp_motif)
+
+    if reverse_comp_motif == args.motif: # Checking for motifs which are their own reverse complement
+        revcomp_pure_runs = indexed_match("(?:"+reverse_comp_motif+")+", test_sequence)
+
+        revcomp_tracts = join_units(revcomp_pure_runs, args.max_gap, args.min_unit, test_sequence)
+    #   print("revcomp_tracts:", revcomp_tracts)
+
+## Todo
+# 1. Distinguish between revcomp and reg in dictionary
+# 2. Testing!
+# 3. README.md
+# 4. Histogram for data
