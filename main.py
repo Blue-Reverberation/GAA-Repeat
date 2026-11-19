@@ -29,8 +29,8 @@ def tract_builder(runs, sequence): # Builds tracts into a dictionary from list o
             "multiple_of_3": length % 3 == 0,
         })
 
-        start, end = runs[0][0], runs[-1][1] # Start and end of tract
-        pure_units = sum((e-s)//3 for s, e in runs) # Calculate the number of units
+    start, end = runs[0][0], runs[-1][1] # Start and end of tract
+    pure_units = sum((e-s)//3 for s, e in runs) # Calculate the number of units
 
     return {
             "start": start,
@@ -102,9 +102,12 @@ if __name__ == "__main__": # Guarding
 
 
     test_data = SeqIO.read(args.fasta, "fasta") # Import data
-    test_sequence = str(test_data.seq) # Convert relevant object to string
-    print("sequence:", test_sequence)
-    match_list = indexed_match("(?:GAA)+", test_sequence)
+    test_sequence = str(test_data.seq)          # Convert relevant object to string
+    #print("sequence:", test_sequence)
+    pure_runs = indexed_match("(?:GAA)+", test_sequence)   # Create list of pure runs
+    print("runs:", pure_runs)
+    tracts = join_units(pure_runs, args.max_gap, args.min_unit, test_sequence)
+    print("tracts:", tracts)
 
     #test = join_units(match_list, 100, 3, test_sequence)
     #print(test)
