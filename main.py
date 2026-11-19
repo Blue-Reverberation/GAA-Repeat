@@ -1,15 +1,18 @@
 import re
 import Bio
 import pathlib
+import argparse
 from Bio import SeqIO
+from Bio import Seq
 
 
 def indexed_match(motif, sequence): # Function to find motifs & locations
-    xlist = [] # Initialise empty list
+    reglist = [] # Initialise empty list
     for m in re.finditer(motif, sequence): # For each match of a given motif in the sequence,
        #print('%02d-%02d: %s' % (m.start(), m.end(), m.group(0))) # Print the location of the match alongside the matched string
-        xlist.append((m.start(), m.end())) # Append the start and end coordinates of each found pure run
-    return xlist
+        reglist.append((m.start(), m.end())) # Append the start and end coordinates of each found pure run
+
+    return reglist
 
 def tract_builder(runs, sequence): # Builds tracts into a dictionary from list of runs
     interruptions = [] #Initialise empty list
@@ -74,10 +77,35 @@ def join_units(runs, max_gap, min_units, sequence):
 
 if __name__ == "__main__": # Guarding
 
-    test_data = SeqIO.read("test-data/multi-interrupt-test1.fasta", "fasta") # Import data
-    test_sequence = str(test_data.seq) # Convert relevant object to string
+    #Parse arguments
+    def parse_args(argv=None):
+        parser = argparse.ArgumentParser(description="Find repeats of motifs in a sequence")
+        parser.add_argument("fasta", help="Path to FASTA file with a single sequence")
+        parser.add_argument("--motif", default="GAA", help="repeat motif (default = GAA)")
+        parser.add_argument("--max-gap", type=int, default=9, help="Largest gap which is still accepted as joined motifs")
+        parser.add_argument("--min-unit", type=int, default=3, help="Minimum number of units in a tract to be reported")
+        args = parser.parse_args(argv)
 
+        args.motif = args.motif.upper() # Make inputs upper case
+
+        if not args.motif or set(args.motif) - set("ACTG"): # Using set logic (empty set = falsy) to determine if input contains non-base characters
+            parser.error("--motif must only contain 'A', 'C', 'T' or 'G'") 
+
+        if args.max_gap < 0: # Check for negative
+            parser.error("--max-gap must be at least 0")
+
+        if args.min_unit < 1: # Check for 0 or negative
+            parser.error("--min-unit must be at least 1")
+
+        return args
+    args = parse_args()
+
+
+    test_data = SeqIO.read(args.fasta, "fasta") # Import data
+    test_sequence = str(test_data.seq) # Convert relevant object to string
+    print("sequence:", test_sequence)
     match_list = indexed_match("(?:GAA)+", test_sequence)
 
-    test = join_units(match_list, 100, 3, test_sequence)
-    print(test)
+    #test = join_units(match_list, 100, 3, test_sequence)
+    #print(test)
+
