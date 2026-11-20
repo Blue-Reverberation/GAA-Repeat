@@ -97,6 +97,9 @@ def parse_args(argv=None):
 
         return args
 
+
+
+
 if __name__ == "__main__": # Guarding
 
     #Parse arguments
@@ -129,21 +132,55 @@ if __name__ == "__main__": # Guarding
 
     #print("revcomp_tracts:", revcomp_tracts) 
     def clean_print(list_of_tracts):
-       for tract in list_of_tracts:
-           print("start:" ,tract["start"])
-           print("end:" ,tract["end"])
-           print("span:" ,tract["span"])
-           print("units:" ,tract["units"])
-           print("longest pure run:" ,tract["longest_run"])
-           print("reverse complement?:" ,tract["reverse_complement"])
-           if not tract["interruptions"] == []:
-               print("Joined interruptions present:")
-               print(tract["interruptions"], "\n")
-           else:
-               print("No joined interruptions", "\n")
+        span_data = []
+        unit_data = []
 
-    clean_print(reg_tracts)
-    clean_print(revcomp_tracts)
+        for tract in list_of_tracts:
+            curr_start = tract["start"]
+            print("start:" ,curr_start)
+
+            curr_end = tract["end"]
+            print("end:" ,curr_end)
+
+            curr_span = tract["span"]
+            print("span:" ,curr_span)
+            span_data.append(curr_span)
+
+            curr_units = tract["units"]
+            print("units:" ,curr_units)
+            unit_data.append(curr_units)
+
+            curr_longest_run = tract["longest_run"]
+            print("longest pure run:" ,curr_longest_run)
+
+            curr_reverse_complement = tract["reverse_complement"]
+            print("reverse complement?:" ,curr_reverse_complement)
+
+            if not tract["interruptions"] == []:
+                print("Joined interruptions present:")
+                print(tract["interruptions"], "\n")
+            else:
+                print("No joined interruptions", "\n")
+
+        #print("span data:", span_data)
+        #print("unit data:", unit_data)
+        return span_data, unit_data
+
+    reg_span_data = [] # Initialise empty lists to hold data from dictionary – Will be used for histograms
+    reg_unit_data = []
+
+    reg_span_data, reg_unit_data = clean_print(reg_tracts) # Using clean_print to append data
+    print("assigned span data:", reg_span_data)
+    print("assigned unit data;", reg_unit_data)
+
+    # Repeat for reverse complement
+    revcomp_span_data = []
+    revcomp_unit_data = []
+    
+    revcomp_span_data, revcomp_unit_data = clean_print(revcomp_tracts)
+    print("assigned revcomp span data:", revcomp_span_data)
+    print("assigned revcomp unit data:", revcomp_unit_data)
+
  
 
 ## Todo
