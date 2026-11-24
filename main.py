@@ -76,7 +76,7 @@ def join_units(runs, max_gap, min_units, sequence, is_complement):
             
     return tracts_postfilter
 
-def parse_args(argv=None):
+def parse_args(argv=None): # Argument parser 
         parser = argparse.ArgumentParser(description="Find repeats of motifs in a sequence")
         parser.add_argument("fasta", help="Path to FASTA file with a single sequence")
         parser.add_argument("--motif", default="GAA", help="repeat motif (default = GAA)")
@@ -184,9 +184,11 @@ if __name__ == "__main__": # Guarding
  
 
 ## Todo
-# 1. Distinguish between revcomp and reg in dictionary # Done
-# 2. Testing! # Semi-done
-# 3. README.md # Unfinished
-# 4. Histogram for data # Unfinished
-# 5. Printing data cleanly # Semi-finished
-# 6 blahalbsadsahdagdsayda
+# 1. Distinguish between revcomp and reg in dictionary   # Done
+# 2. Testing!   # Semi-done
+# 3. README.md  # Unfinished
+# 4. Histogram for data     # Unfinished
+    # i) Pure run Length
+    # ii) Interruption length
+# 5. Printing data cleanly  # Semi-finished
+# 6. Automatic pytest   # In progress
