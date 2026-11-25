@@ -29,23 +29,23 @@ The output will include:
 1. Every tract found greater than *min_units* units long  
 
 Each tract outputs the following information:
->start:   (Start coordinates of tract)
-end:    (End coordinates of tract)
-span:   (Length of tract in bases)
-units:   (Number of motifs found)
-longest pure run:   (Highest number of motifs found with 0 interruptions)
-reverse complement?:  (Whether the tract is made up of the original motif or of its reverse complement)
-**Joined interruptions present: [...]**
+>start:   (Start coordinates of tract)  
+end:    (End coordinates of tract)  
+span:   (Length of tract in bases)  
+units:   (Number of motifs found)  
+longest pure run:   (Highest number of motifs found with 0 interruptions)  
+reverse complement?:  (Whether the tract is made up of the original motif or of its reverse complement)  
+**Joined interruptions present: [...]**  
 
 2. Every joined interruption within a tract
 
 Each joined interruption outputs the following information:
->"start":    (Start coordinates of interruption)   
-"end"   (End coordinates of iterruption)
-"length":   (Length of interruption in bases)
-"sequence":     (The interruption itself)
-"multiple_of_3":    (If the interruption length is divisible by 3)
-
+>"start":    (Start coordinates of interruption)     
+"end"   (End coordinates of iterruption)  
+"length":   (Length of interruption in bases)  
+"sequence":     (The interruption itself)  
+"multiple_of_3":    (If the interruption length is divisible by 3)  
+  
 3. Histogram summarising data **(WIP)**
 
 Two separate histograms will be output, summarising the distribution of:
