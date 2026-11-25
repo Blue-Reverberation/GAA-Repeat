@@ -34,8 +34,9 @@ end:    (End coordinates of tract)
 span:   (Length of tract in bases)  
 units:   (Number of motifs found)  
 longest pure run:   (Highest number of motifs found with 0 interruptions)  
-reverse complement?:  (Whether the tract is made up of the original motif or of its reverse complement)  
-**Joined interruptions present: [...]**  
+reverse complement?:  (Whether the tract is made up of the original motif or of its reverse complement)
+>  
+>**Joined interruptions present: [...]**  
 
 2. Every joined interruption within a tract
 
