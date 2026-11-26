@@ -7,6 +7,7 @@ from Bio.Seq import Seq
 
 
 def indexed_match(motif, sequence): # Function to find motifs & locations
+    '''Returns list of (start, end) coordinates, greedy algorithm '''
     #print("index motif:", motif)
     reglist = [] # Initialise empty list
     for m in re.finditer(motif, sequence): # For each match of a given motif in the sequence,
@@ -16,6 +17,7 @@ def indexed_match(motif, sequence): # Function to find motifs & locations
     return reglist
 
 def tract_builder(runs, sequence, is_complement): # Builds tracts into a dictionary from list of runs
+    '''Builds tract information dictionary from a single tract, including a nested interruption dictionary for a tract if it includes one'''
     interruptions = [] #Initialise empty list
     for (_, previous_end), (next_start, _) in zip(runs, runs[1:]): # Unpacking relevant start/end data in neighbouring runs
 
@@ -45,11 +47,7 @@ def tract_builder(runs, sequence, is_complement): # Builds tracts into a diction
 
 
 def join_units(runs, max_gap, min_units, sequence, is_complement): 
-    # Function which joins pure runs if within parameters, then calls tract_builder() to create a list of dictionaries
-
-    ## Todo
-    # 1. Rigorously check edge cases
-
+    '''Joins pure runs if within max_gap parameters. Calls tract_builder() to create a tract information dictionary. Returns a list of each tract dictionary.'''
     if not runs:
         return []
 
@@ -67,7 +65,6 @@ def join_units(runs, max_gap, min_units, sequence, is_complement):
             tracts_prefilter.append(tract_builder(current, sequence, is_complement)) # Finish the tract and build into dictionary with tract_builder()
             current = [run] # Overwrite the old, now built track with the current run
 
-        
     tracts_prefilter.append(tract_builder(current, sequence, is_complement)) # Append the last track
 
     for entry in tracts_prefilter: # For each entry in the compiled dictionaries,
@@ -97,16 +94,62 @@ def parse_args(argv=None): # Argument parser
 
         return args
 
+def clean_print(list_of_tracts):
+    '''Prints information from a list of tract dictionaries cleanly in terminal'''
+    span_data = []
+    unit_data = []
+    counter = 1
+    
+    for tract in list_of_tracts:
+        print("TRACT #" + str(counter))
+        counter += 1
+
+        curr_start = tract["start"]
+        print("start:" ,curr_start)
+
+        curr_end = tract["end"]
+        print("end:" ,curr_end)
+
+        curr_span = tract["span"]
+        print("span:" ,curr_span)
+        span_data.append(curr_span)
+
+        curr_units = tract["units"]
+        print("units:" ,curr_units)
+        unit_data.append(curr_units)
+
+        curr_longest_run = tract["longest_run"]
+        print("longest pure run:" ,curr_longest_run)
+
+        curr_reverse_complement = tract["reverse_complement"]
+        print("reverse complement?:" ,curr_reverse_complement, "\n")
+
+        if not tract["interruptions"] == []:
+            interruptions = tract["interruptions"]
+            print("Joined interruptions present: \n")
+
+            for interruption in interruptions:
+                print("Interruption start:" ,interruption["start"])
+                print("Interruption end:", interruption["end"])
+                print("Interruption span:", interruption["length"])
+                print("sequence:", interruption["sequence"])
+                print("multiple of 3?:", interruption["multiple_of_3"], "\n")
+            print("\n")
+            #print(tract["interruptions"], "\n")
+        else:
+            print("No joined interruptions", "\n \n")
+
+    #print("span data:", span_data)
+    #print("unit data:", unit_data)
+    return span_data, unit_data
+
 
 if __name__ == "__main__": # Guarding
 
-    #Parse arguments
-    
     args = parse_args()
 
-
     test_data = SeqIO.read(args.fasta, "fasta") # Import data
-    test_sequence = str(test_data.seq)          # Convert relevant object to string
+    test_sequence = str(test_data.seq)          # Convert relevant information to string
     #print("sequence:", test_sequence)
 
 
@@ -129,64 +172,31 @@ if __name__ == "__main__": # Guarding
         revcomp_tracts = join_units(revcomp_pure_runs, args.max_gap, args.min_unit, test_sequence, True)
 
     #print("revcomp_tracts:", revcomp_tracts) 
-    def clean_print(list_of_tracts):
-        span_data = []
-        unit_data = []
 
-        for tract in list_of_tracts:
-            curr_start = tract["start"]
-            print("start:" ,curr_start)
-
-            curr_end = tract["end"]
-            print("end:" ,curr_end)
-
-            curr_span = tract["span"]
-            print("span:" ,curr_span)
-            span_data.append(curr_span)
-
-            curr_units = tract["units"]
-            print("units:" ,curr_units)
-            unit_data.append(curr_units)
-
-            curr_longest_run = tract["longest_run"]
-            print("longest pure run:" ,curr_longest_run)
-
-            curr_reverse_complement = tract["reverse_complement"]
-            print("reverse complement?:" ,curr_reverse_complement)
-
-            if not tract["interruptions"] == []:
-                print("Joined interruptions present:")
-                print(tract["interruptions"], "\n")
-            else:
-                print("No joined interruptions", "\n")
-
-        #print("span data:", span_data)
-        #print("unit data:", unit_data)
-        return span_data, unit_data
 
     reg_span_data = [] # Initialise empty lists to hold data from dictionary – Will be used for histograms
     reg_unit_data = []
 
     reg_span_data, reg_unit_data = clean_print(reg_tracts) # Using clean_print to append data
-    print("assigned span data:", reg_span_data)
-    print("assigned unit data;", reg_unit_data)
+    # print("assigned span data:", reg_span_data)
+    # print("assigned unit data;", reg_unit_data)
 
     # Repeat for reverse complement
     revcomp_span_data = []
     revcomp_unit_data = []
     
     revcomp_span_data, revcomp_unit_data = clean_print(revcomp_tracts)
-    print("assigned revcomp span data:", revcomp_span_data)
-    print("assigned revcomp unit data:", revcomp_unit_data)
+    # print("assigned revcomp span data:", revcomp_span_data)
+    # print("assigned revcomp unit data:", revcomp_unit_data)
 
  
 
 ## Todo
 # 1. Distinguish between revcomp and reg in dictionary   # Done
-# 2. Testing!   # Semi-done
-# 3. README.md  # Unfinished
+# 2. Testing!   # Almost done
+# 3. README.md  # WIP
 # 4. Histogram for data     # Unfinished
     # i) Pure run Length
     # ii) Interruption length
-# 5. Printing data cleanly  # Semi-finished
+# 5. Printing data cleanly  # Done!
 # 6. Automatic pytest   # In progress
