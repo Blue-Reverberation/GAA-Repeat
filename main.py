@@ -2,8 +2,6 @@ import re
 import Bio
 import pathlib
 import argparse
-import matplotlib
-matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from Bio import SeqIO
 from Bio.Seq import Seq
@@ -84,6 +82,7 @@ def parse_args(argv=None): # Argument parser
         parser.add_argument("--max-gap", type=int, default=9, help="Largest gap (in bases) which is still accepted as joined motifs (default = 9)")
         parser.add_argument("--min-unit", type=int, default=3, help="Minimum number of units in a tract to be reported (default = 3)")
         parser.add_argument("--show-interruptions", action="store_true", help="Show full list of all joined interruptions")
+        parser.add_argument("--plot", action="store_true", help="Plot histogram of pure rune length & interruption length")
         args = parser.parse_args(argv)
 
         args.motif = args.motif.upper() # Make inputs upper case
@@ -155,6 +154,31 @@ def clean_print(list_of_tracts, show_interruptions):
     return span_data, unit_data, pure_run_length_data, interruption_length_data
 
 
+def plot_results(args_plot):
+    if args_plot == True:
+        import matplotlib
+        matplotlib.use("Agg")
+
+        pure_run_length_data = reg_pure_run_length_data + revcomp_pure_run_length_data
+        if not pure_run_length_data == []:
+            plt.hist(pure_run_length_data,
+                    bins=[x - 0.5 for x in range(min(pure_run_length_data), max(pure_run_length_data) + 2)])
+            plt.xlabel("Pure run length in units")
+            plt.ylabel("Number of runs")
+            plt.savefig("run_lengths.png", dpi=150)
+            plt.close()
+            print("Saved run_lengths.png to project directory")
+
+        interruption_length_data = reg_interruption_length_data + revcomp_interruption_length_data
+        if not interruption_length_data == []:
+            plt.hist(interruption_length_data,
+                    bins=[x for x in range(min(interruption_length_data), max(interruption_length_data))])
+            plt.xlabel("Interruption length in bases")
+            plt.ylabel("Number of interruptions")
+            plt.savefig("interruption_lengths.png", dpi=150)
+            plt.close
+            print("Saved interruption_lengths.png to project directory")
+
 if __name__ == "__main__": # Guarding
 
     args = parse_args()
@@ -200,23 +224,8 @@ if __name__ == "__main__": # Guarding
     # print("assigned revcomp span data:", revcomp_span_data)
     # print("assigned revcomp unit data:", revcomp_unit_data)
 
-    pure_run_length_data = reg_pure_run_length_data + revcomp_pure_run_length_data
-    if not pure_run_length_data == []:
-        plt.hist(pure_run_length_data,
-                bins=[x - 0.5 for x in range(min(pure_run_length_data), max(pure_run_length_data) + 2)])
-        plt.xlabel("Pure run length in units")
-        plt.ylabel("Number of runs")
-        plt.savefig("run_lengths.png", dpi=150)
-        plt.close()
-
-    interruption_length_data = reg_interruption_length_data + revcomp_interruption_length_data
-    if not interruption_length_data == []:
-        plt.hist(interruption_length_data,
-                 bins=[x for x in range(min(interruption_length_data), max(interruption_length_data))])
-        plt.xlabel("Interruption length in bases")
-        plt.ylabel("Number of interruptions")
-        plt.savefig("interruption_lengths.png", dpi=150)
-        plt.close
+    plot_results(args.plot)
+    
 
 ## Todo
 # 1. Distinguish between revcomp and reg in dictionary   # Done
