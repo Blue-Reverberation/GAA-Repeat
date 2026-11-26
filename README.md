@@ -49,7 +49,7 @@ Each joined interruption outputs the following information:
 "sequence":     (The interruption itself)  
 "multiple of 3?":    (If the interruption length is divisible by 3)  
   
-3. Histogram summarising data
+3. Histogram summarising data [--plot]
 
 Two separate histograms will be output, summarising the distribution of:
 - Pure-run length
