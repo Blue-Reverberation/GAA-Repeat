@@ -124,10 +124,10 @@ def clean_print(list_of_tracts, show_interruptions):
         curr_units = tract["units"]
         print("units:" ,curr_units)
         unit_data.append(curr_units)
+        pure_run_length_data.append(curr_units)
 
         curr_longest_run = tract["longest_run"]
         print("longest pure run:" ,curr_longest_run)
-        pure_run_length_data.append(curr_longest_run)
 
         curr_reverse_complement = tract["reverse_complement"]
         print("reverse complement?:" ,curr_reverse_complement, "\n")
