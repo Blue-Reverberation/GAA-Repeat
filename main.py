@@ -2,8 +2,12 @@ import re
 import Bio
 import pathlib
 import argparse
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 from Bio import SeqIO
 from Bio.Seq import Seq
+
 
 
 def indexed_match(motif, sequence): # Function to find motifs & locations
@@ -100,6 +104,8 @@ def clean_print(list_of_tracts, show_interruptions):
     '''Prints information from a list of tract dictionaries cleanly in terminal'''
     span_data = []
     unit_data = []
+    pure_run_length_data = []
+    interruption_length_data = []
     counter = 1
     
     for tract in list_of_tracts:
@@ -122,6 +128,7 @@ def clean_print(list_of_tracts, show_interruptions):
 
         curr_longest_run = tract["longest_run"]
         print("longest pure run:" ,curr_longest_run)
+        pure_run_length_data.append(curr_longest_run)
 
         curr_reverse_complement = tract["reverse_complement"]
         print("reverse complement?:" ,curr_reverse_complement, "\n")
@@ -135,6 +142,7 @@ def clean_print(list_of_tracts, show_interruptions):
                     print("Interruption start:" ,interruption["start"])
                     print("Interruption end:", interruption["end"])
                     print("Interruption span:", interruption["length"])
+                    interruption_length_data.append(interruption["length"])
                     print("sequence:", interruption["sequence"])
                     print("multiple of 3?:", interruption["multiple_of_3"], "\n")
                 print("\n")
@@ -144,7 +152,7 @@ def clean_print(list_of_tracts, show_interruptions):
 
     #print("span data:", span_data)
     #print("unit data:", unit_data)
-    return span_data, unit_data
+    return span_data, unit_data, pure_run_length_data, interruption_length_data
 
 
 if __name__ == "__main__": # Guarding
@@ -180,7 +188,7 @@ if __name__ == "__main__": # Guarding
     reg_span_data = [] # Initialise empty lists to hold data from dictionary – Will be used for histograms
     reg_unit_data = []
 
-    reg_span_data, reg_unit_data = clean_print(reg_tracts, args.show_interruptions) # Using clean_print to append data
+    reg_span_data, reg_unit_data, reg_pure_run_length_data, reg_interruption_length_data = clean_print(reg_tracts, args.show_interruptions) # Using clean_print to append data
     # print("assigned span data:", reg_span_data)
     # print("assigned unit data;", reg_unit_data)
 
@@ -188,17 +196,33 @@ if __name__ == "__main__": # Guarding
     revcomp_span_data = []
     revcomp_unit_data = []
     
-    revcomp_span_data, revcomp_unit_data = clean_print(revcomp_tracts, args.show_interruptions)
+    revcomp_span_data, revcomp_unit_data, revcomp_pure_run_length_data, revcomp_interruption_length_data = clean_print(revcomp_tracts, args.show_interruptions)
     # print("assigned revcomp span data:", revcomp_span_data)
     # print("assigned revcomp unit data:", revcomp_unit_data)
 
- 
+    pure_run_length_data = reg_pure_run_length_data + revcomp_pure_run_length_data
+    if not pure_run_length_data == []:
+        plt.hist(pure_run_length_data,
+                bins=[x - 0.5 for x in range(min(pure_run_length_data), max(pure_run_length_data) + 2)])
+        plt.xlabel("Pure run length in units")
+        plt.ylabel("Number of runs")
+        plt.savefig("run_lengths.png", dpi=150)
+        plt.close()
+
+    interruption_length_data = reg_interruption_length_data + revcomp_interruption_length_data
+    if not interruption_length_data == []:
+        plt.hist(interruption_length_data,
+                 bins=[x for x in range(min(interruption_length_data), max(interruption_length_data))])
+        plt.xlabel("Interruption length in bases")
+        plt.ylabel("Number of interruptions")
+        plt.savefig("interruption_lengths.png", dpi=150)
+        plt.close
 
 ## Todo
 # 1. Distinguish between revcomp and reg in dictionary   # Done
 # 2. Testing!   # Almost done
 # 3. README.md  # WIP
-# 4. Histogram for data     # Unfinished
+# 4. Histogram for data     # Almost done
     # i) Pure run Length
     # ii) Interruption length
 # 5. Printing data cleanly  # Done!
