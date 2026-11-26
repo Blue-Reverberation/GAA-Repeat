@@ -13,7 +13,6 @@ def indexed_match(motif, sequence): # Function to find motifs & locations
     #print("index motif:", motif)
     reglist = [] # Initialise empty list
     for m in re.finditer(motif, sequence): # For each match of a given motif in the sequence,
-       #print('%02d-%02d: %s' % (m.start(), m.end(), m.group(0))) # Print the location of the match alongside the matched string
         reglist.append((m.start(), m.end())) # Append the start and end coordinates of each found pure run
 
     return reglist
@@ -42,7 +41,7 @@ def tract_builder(runs, sequence, is_complement, motif): # Builds tracts into a 
             "end": end,
             "span": end - start,
             "units": pure_units, 
-            "longest_run": max((e-s)//3 for s,e in runs), # The longest uninterrupted run
+            "longest_run": max((e-s)//len(motif) for s,e in runs), # The longest uninterrupted run
             "interruptions": interruptions,
             "reverse_complement": is_complement
         }
