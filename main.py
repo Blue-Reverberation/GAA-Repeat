@@ -79,6 +79,7 @@ def parse_args(argv=None): # Argument parser
         parser.add_argument("--motif", default="GAA", help="repeat motif (default = GAA)")
         parser.add_argument("--max-gap", type=int, default=9, help="Largest gap (in bases) which is still accepted as joined motifs (default = 9)")
         parser.add_argument("--min-unit", type=int, default=3, help="Minimum number of units in a tract to be reported (default = 3)")
+        parser.add_argument("--show-interruptions", action="store_true", help="Show full list of all joined interruptions")
         args = parser.parse_args(argv)
 
         args.motif = args.motif.upper() # Make inputs upper case
@@ -92,9 +93,10 @@ def parse_args(argv=None): # Argument parser
         if args.min_unit < 1: # Check for 0 or negative
             parser.error("--min-unit must be at least 1")
 
+
         return args
 
-def clean_print(list_of_tracts):
+def clean_print(list_of_tracts, show_interruptions):
     '''Prints information from a list of tract dictionaries cleanly in terminal'''
     span_data = []
     unit_data = []
@@ -125,17 +127,18 @@ def clean_print(list_of_tracts):
         print("reverse complement?:" ,curr_reverse_complement, "\n")
 
         if not tract["interruptions"] == []:
-            interruptions = tract["interruptions"]
-            print("Joined interruptions present: \n")
+            print("-Joined interruptions present- \n")
+            if show_interruptions == True:
+                interruptions = tract["interruptions"]
 
-            for interruption in interruptions:
-                print("Interruption start:" ,interruption["start"])
-                print("Interruption end:", interruption["end"])
-                print("Interruption span:", interruption["length"])
-                print("sequence:", interruption["sequence"])
-                print("multiple of 3?:", interruption["multiple_of_3"], "\n")
-            print("\n")
-            #print(tract["interruptions"], "\n")
+                for interruption in interruptions:
+                    print("Interruption start:" ,interruption["start"])
+                    print("Interruption end:", interruption["end"])
+                    print("Interruption span:", interruption["length"])
+                    print("sequence:", interruption["sequence"])
+                    print("multiple of 3?:", interruption["multiple_of_3"], "\n")
+                print("\n")
+                #print(tract["interruptions"], "\n")
         else:
             print("No joined interruptions", "\n \n")
 
@@ -177,7 +180,7 @@ if __name__ == "__main__": # Guarding
     reg_span_data = [] # Initialise empty lists to hold data from dictionary – Will be used for histograms
     reg_unit_data = []
 
-    reg_span_data, reg_unit_data = clean_print(reg_tracts) # Using clean_print to append data
+    reg_span_data, reg_unit_data = clean_print(reg_tracts, args.show_interruptions) # Using clean_print to append data
     # print("assigned span data:", reg_span_data)
     # print("assigned unit data;", reg_unit_data)
 
@@ -185,7 +188,7 @@ if __name__ == "__main__": # Guarding
     revcomp_span_data = []
     revcomp_unit_data = []
     
-    revcomp_span_data, revcomp_unit_data = clean_print(revcomp_tracts)
+    revcomp_span_data, revcomp_unit_data = clean_print(revcomp_tracts, args.show_interruptions)
     # print("assigned revcomp span data:", revcomp_span_data)
     # print("assigned revcomp unit data:", revcomp_unit_data)
 
