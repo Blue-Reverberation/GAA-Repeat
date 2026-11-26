@@ -37,7 +37,7 @@ def tract_builder(runs, sequence, is_complement): # Builds tracts into a diction
             "start": start,
             "end": end,
             "span": end - start,
-            "units": pure_units, # uninterrupted
+            "units": pure_units, 
             "longest_run": max((e-s)//3 for s,e in runs), # The longest uninterrupted run
             "interruptions": interruptions,
             "reverse_complement": is_complement
@@ -80,8 +80,8 @@ def parse_args(argv=None): # Argument parser
         parser = argparse.ArgumentParser(description="Find repeats of motifs in a sequence")
         parser.add_argument("fasta", help="Path to FASTA file with a single sequence")
         parser.add_argument("--motif", default="GAA", help="repeat motif (default = GAA)")
-        parser.add_argument("--max-gap", type=int, default=9, help="Largest gap which is still accepted as joined motifs")
-        parser.add_argument("--min-unit", type=int, default=3, help="Minimum number of units in a tract to be reported")
+        parser.add_argument("--max-gap", type=int, default=9, help="Largest gap (in bases) which is still accepted as joined motifs (default = 9)")
+        parser.add_argument("--min-unit", type=int, default=3, help="Minimum number of units in a tract to be reported (default = 3)")
         args = parser.parse_args(argv)
 
         args.motif = args.motif.upper() # Make inputs upper case
@@ -96,8 +96,6 @@ def parse_args(argv=None): # Argument parser
             parser.error("--min-unit must be at least 1")
 
         return args
-
-
 
 
 if __name__ == "__main__": # Guarding
