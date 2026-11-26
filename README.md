@@ -16,10 +16,10 @@ In a terminal run:
 
 >python main.py [-h] [--motif] [--max-gap [--min-unit] path/to/file.fasta 
 
-  -h, --help           Shows help message and exit
-  --motif MOTIF        Repeat motif of interest (default = GAA)
-  --max-gap MAX_GAP    Largest gap between motifs which is still accepted and joined 
-  --min-unit MIN_UNIT  Minimum number of units in a tract to be reported
+  -h, --help           Shows help message and exit  
+  --motif MOTIF        Repeat motif of interest (default = GAA)  
+  --max-gap MAX_GAP    Largest gap between motifs which is still accepted and joined   
+  --min-unit MIN_UNIT  Minimum number of units in a tract to be reported  
 
 The scanner will **automatically scan for the reverse complement of the motif.**
 
@@ -38,14 +38,15 @@ reverse complement?:  (Whether the tract is made up of the original motif or of 
 >  
 >**Joined interruptions present: [...]**  
 
+
 2. Every joined interruption within a tract
 
 Each joined interruption outputs the following information:
->"start":    (Start coordinates of interruption)     
-"end"   (End coordinates of iterruption)  
-"length":   (Length of interruption in bases)  
+>"Interruption start":    (Start coordinates of interruption)     
+"Interruption end"   (End coordinates of iterruption)  
+"Interruption span":   (Length of interruption in bases)  
 "sequence":     (The interruption itself)  
-"multiple_of_3":    (If the interruption length is divisible by 3)  
+"multiple of 3?":    (If the interruption length is divisible by 3)  
   
 3. Histogram summarising data **(WIP)**
 
