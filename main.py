@@ -18,7 +18,7 @@ def indexed_match(motif, sequence): # Function to find motifs & locations
 
     return reglist
 
-def tract_builder(runs, sequence, is_complement): # Builds tracts into a dictionary from list of runs
+def tract_builder(runs, sequence, is_complement, motif): # Builds tracts into a dictionary from list of runs
     '''Builds tract information dictionary from a single tract, including a nested interruption dictionary for a tract if it includes one'''
     interruptions = [] #Initialise empty list
     for (_, previous_end), (next_start, _) in zip(runs, runs[1:]): # Unpacking relevant start/end data in neighbouring runs
@@ -35,7 +35,7 @@ def tract_builder(runs, sequence, is_complement): # Builds tracts into a diction
         })
 
     start, end = runs[0][0], runs[-1][1] # Start and end of tract
-    pure_units = sum((e-s)//3 for s, e in runs) # Calculate the number of units
+    pure_units = sum((e-s)//len(motif) for s, e in runs) # Calculate the number of units
 
     return {
             "start": start,
@@ -48,7 +48,7 @@ def tract_builder(runs, sequence, is_complement): # Builds tracts into a diction
         }
 
 
-def join_units(runs, max_gap, min_units, sequence, is_complement): 
+def join_units(runs, max_gap, min_units, sequence, is_complement, motif): 
     '''Joins pure runs if within max_gap parameters. Calls tract_builder() to create a tract information dictionary. Returns a list of each tract dictionary.'''
     if not runs:
         return []
@@ -64,10 +64,10 @@ def join_units(runs, max_gap, min_units, sequence, is_complement):
         if gap <= max_gap: # If the gap is within threshold,
             current.append(run) # Append the run to the tract being built
         else: # If the candidate pure runs distance exceeds the threshold,
-            tracts_prefilter.append(tract_builder(current, sequence, is_complement)) # Finish the tract and build into dictionary with tract_builder()
+            tracts_prefilter.append(tract_builder(current, sequence, is_complement, motif)) # Finish the tract and build into dictionary with tract_builder()
             current = [run] # Overwrite the old, now built track with the current run
 
-    tracts_prefilter.append(tract_builder(current, sequence, is_complement)) # Append the last track
+    tracts_prefilter.append(tract_builder(current, sequence, is_complement, motif)) # Append the last track
 
     for entry in tracts_prefilter: # For each entry in the compiled dictionaries,
         if entry["units"] >= min_units: # if the units entry is greater than the minimum threshold
@@ -192,7 +192,7 @@ if __name__ == "__main__": # Guarding
     #print("runs:", pure_runs)
     #print("args.motif:", args.motif)
 
-    reg_tracts = join_units(reg_pure_runs, args.max_gap, args.min_unit, test_sequence, False) # Create list of dictionaries
+    reg_tracts = join_units(reg_pure_runs, args.max_gap, args.min_unit, test_sequence, False, args.motif) # Create list of dictionaries
     #print("reg_tracts:", reg_tracts)
 
     # Repeat steps for complementary motif
@@ -204,7 +204,7 @@ if __name__ == "__main__": # Guarding
         revcomp_pure_runs = indexed_match("(?:"+reverse_comp_motif+")+", test_sequence)
         #print("revcomp_pure_runs:", revcomp_pure_runs)
 
-        revcomp_tracts = join_units(revcomp_pure_runs, args.max_gap, args.min_unit, test_sequence, True)
+        revcomp_tracts = join_units(revcomp_pure_runs, args.max_gap, args.min_unit, test_sequence, True, reverse_comp_motif)
 
     #print("revcomp_tracts:", revcomp_tracts) 
 
