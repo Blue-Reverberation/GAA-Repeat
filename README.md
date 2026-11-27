@@ -58,6 +58,8 @@ Two separate histograms will be output, summarising the distribution of:
 - Interruption length
 
 PNG files of the histograms will be saved to the project folder.  
+  
+The following are sample histograms run on keratin.fasta, using default parameters for ```min-units``` and ```max-gap```, with ```--motif TC``` and ```--show-interruptions```:   
 ![alt text](image.png)  
 ![alt text](image-1.png)   
 
