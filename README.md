@@ -14,14 +14,15 @@ The only requisites for usage are a standard FASTA file containing genetic code,
 
 In a terminal run:
 
->python motif_scanner.py [-h] [--motif] [--max-gap [--min-unit] [--show-interruptions] [--plot]  path/to/file.fasta 
+```python motif_scanner.py [-h] [--motif] [--max-gap [--min-unit] [--show-interruptions] [--plot]  path/to/file.fasta```
 
-  -h, --help           Shows help message and exit  
-  --motif MOTIF        Repeat motif of interest (default = GAA)  
-  --max-gap MAX_GAP    Largest gap between motifs in bases which is still accepted and joined (default = 9 bases)   
-  --min-unit MIN_UNIT   Minimum number of units in a tract to be reported (default = 3 units)
- --show-interruptions   Lists joined interruptions in the output         
-  --plot    Plots histogram of pure run length & interruption length. Will only plot interruptions if --show-interruptions is used.
+
+ ```**-h, --help**```           Shows help message and exit  
+  ```--motif MOTIF```        Repeat motif of interest (default = GAA)  
+ ```--max-gap MAX_GAP```    Largest gap between motifs in bases which is still accepted and joined (default = 9 bases)   
+```--min-unit MIN_UNIT```   Minimum number of units in a tract to be reported (default = 3 units)
+```--show-interruptions```   Lists joined interruptions in the output         
+  ```--plot```    Plots histogram of pure run length & interruption length. Will only plot interruptions if --show-interruptions is used.
 
 The scanner will **automatically scan for the reverse complement of the motif.**
 
