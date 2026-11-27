@@ -162,7 +162,7 @@ def plot_results(args_plot):
         if not pure_run_length_data == []:
             plt.hist(pure_run_length_data,
                     bins=[x - 0.5 for x in range(min(pure_run_length_data), max(pure_run_length_data) + 2)])
-            plt.xlabel("Pure run length in units")
+            plt.xlabel("Repeat units per tract")
             plt.ylabel("Number of runs")
             plt.savefig("run_lengths.png", dpi=150)
             plt.close()
