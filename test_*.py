@@ -1,4 +1,4 @@
-from main import indexed_match, join_units
+from motif_scanner import indexed_match, join_units
 ## Empty Template - join_units()
 # "start": ,
 # "end": ,
