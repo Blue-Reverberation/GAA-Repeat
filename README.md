@@ -40,9 +40,8 @@ reverse complement?:  (Whether the tract is made up of the original motif or of 
 >  
 >**Joined interruptions present: [...]**  
 
-The coorinates
 
-2. Every joined interruption within a tract
+2. Every joined interruption within a tract [--show-interruptions]
 
 Each joined interruption outputs the following information:
 >"Interruption start":    (Start coordinates of interruption)     
