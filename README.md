@@ -20,7 +20,7 @@ In a terminal run:
  ```**-h, --help**```           Shows help message and exit  
   ```--motif MOTIF```        Repeat motif of interest (default = GAA)  
  ```--max-gap MAX_GAP```    Largest gap between motifs in bases which is still accepted and joined (default = 9 bases)   
-```--min-unit MIN_UNIT```   Minimum number of units in a tract to be reported (default = 3 units)
+```--min-unit MIN_UNIT```   Minimum number of units in a tract to be reported (default = 3 units)  
 ```--show-interruptions```   Lists joined interruptions in the output         
   ```--plot```    Plots histogram of pure run length & interruption length. Will only plot interruptions if --show-interruptions is used.
 
@@ -29,29 +29,29 @@ The scanner will **automatically scan for the reverse complement of the motif.**
 ## Output
 The output will include:
 
-1. Every tract found greater than *min_units* units long  
+1. Every tract found greater than ```min_units``` units long  
 
 Each tract outputs the following information:
->start:   (Start coordinates of tract, 0 based)  
-end:    (End coordinates of tract, ends at last base)  
-span:   (Length of tract in bases)  
-units:   (Number of motifs found)  
-longest pure run:   (Highest number of motifs found with 0 interruptions)  
-reverse complement?:  (Whether the tract is made up of the original motif or of its reverse complement)
+```start:```   (Start coordinates of tract, 0 based)  
+```end:```    (End coordinates of tract, ends at last base)  
+```span:```   (Length of tract in bases)  
+```units:```   (Number of motifs found)  
+```longest pure run:```   (Highest number of motifs found with 0 interruptions)  
+```reverse complement?:```  (Whether the tract is made up of the original motif or of its reverse complement)
 >  
->**Joined interruptions present: [...]**  
+>```Joined interruptions present:```**[...]**  
 
 
-2. Every joined interruption within a tract [--show-interruptions]
+2. Every joined interruption within a tract ```[--show-interruptions]```
 
 Each joined interruption outputs the following information:
->"Interruption start":    (Start coordinates of interruption)     
-"Interruption end"   (End coordinates of iterruption)  
-"Interruption span":   (Length of interruption in bases)  
-"sequence":     (The interruption itself)  
-"multiple of 3?":    (If the interruption length is divisible by 3)  
+>```"Interruption start":```    (Start coordinates of interruption)     
+```"Interruption end"```   (End coordinates of iterruption)  
+```"Interruption span":```   (Length of interruption in bases)  
+```"sequence":```     (The interruption itself)  
+```"multiple of 3?":```    (If the interruption length is divisible by 3)  
   
-3. Histogram summarising data [--plot]
+3. Histogram summarising data ```[--plot]```
 
 Two separate histograms will be output, summarising the distribution of:
 - Pure-run length
@@ -70,11 +70,11 @@ Based on the definitions above, there are:
 
 >python motif_scanner.py sample.fasta --motif GAA --show-interruptions
   
-No max-gap parameter was specified, default = 9 bases
-No min-unit parameter was specified, default = 3 units  
+No ```max-gap``` parameter was specified, default = 9 bases
+No ```min-unit``` parameter was specified, default = 3 units  
 
 Output:
->TRACT #1  
+```TRACT #1  
 start: 0  
 end: 31  
 span: 31  
@@ -89,4 +89,4 @@ Interruption end: 10
 Interruption span: 1  
 sequence: C  
 multiple of 3?: False   
-
+```
