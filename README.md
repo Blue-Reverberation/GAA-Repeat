@@ -8,13 +8,20 @@
 **Tract** – A tract is made up of one or more pure runs joined, each of which is at most *max_gap* nucleotides from the neighbouring pure run.   
 **min_units** – A tract is discarded if the number of units in a given tract is less than *min_units*  
 
+## Setup  
+### Installing Requirements  
+Install prerequisites:  
+```python -m pip install -r requirements.txt```  
+  
+### Pytest
+To sanity-check results, run ```pytest``` in the project directory, which checks the functions of the code against known answers, reporting an error if an unexpected answer is returned.    
 
 ## Usage
 The only requisites for usage are a standard FASTA file containing genetic code, and the contents of requirements.txt.
 
 In a terminal run:
 
-```python motif_scanner.py [-h] [--motif] [--max-gap [--min-unit] [--show-interruptions] [--plot]  path/to/file.fasta```
+```python motif_scanner.py path/to/file.fasta [-h] [--motif] [--max-gap [--min-unit] [--show-interruptions] [--plot]  ```
 
 
  ```**-h, --help**```           Shows help message and exit  
@@ -26,7 +33,6 @@ In a terminal run:
 
 The scanner will **automatically scan for the reverse complement of the motif.**  
 
-To sanity-check results, run ```pytest``` in the project directory, which checks the functions of the code against known answers, reporting an error if an unexpected answer is returned.  
 
 ## Output
 The output will include:
@@ -56,7 +62,7 @@ Each joined interruption outputs the following information:
 ### 3. Histogram summarising data ```[--plot]```
 
 Two separate histograms will be output, summarising the distribution of:
-- Pure-run length
+- Repeat units per tract
 - Interruption length
 
 PNG files of the histograms will be saved to the project folder.  

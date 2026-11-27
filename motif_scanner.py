@@ -179,10 +179,10 @@ def plot_results(args_plot):
         import matplotlib
         matplotlib.use("Agg")
 
-        pure_run_length_data = reg_pure_run_length_data + revcomp_pure_run_length_data
-        if not pure_run_length_data == []:
-            plt.hist(pure_run_length_data,
-                    bins=[x - 0.5 for x in range(min(pure_run_length_data), max(pure_run_length_data) + 2)])
+        repeat_units_per_tract = reg_pure_run_length_data + revcomp_pure_run_length_data
+        if not repeat_units_per_tract == []:
+            plt.hist(repeat_units_per_tract,
+                    bins=[x - 0.5 for x in range(min(repeat_units_per_tract), max(repeat_units_per_tract) + 2)])
             plt.xlabel("Repeat units per tract")
             plt.ylabel("Number of runs")
             plt.savefig("run_lengths.png", dpi=150)
@@ -196,7 +196,7 @@ def plot_results(args_plot):
             plt.xlabel("Interruption length in bases")
             plt.ylabel("Number of interruptions")
             plt.savefig("interruption_lengths.png", dpi=150)
-            plt.close
+            plt.close()
             print("Saved interruption_lengths.png to project directory")
 
 if __name__ == "__main__": # Guarding
