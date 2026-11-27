@@ -10,7 +10,7 @@
 
 
 ## Usage
-The only requisite for usage is a standard FASTA file containing genetic code.
+The only requisites for usage are a standard FASTA file containing genetic code, and the contents of requirements.txt.
 
 In a terminal run:
 
@@ -21,7 +21,7 @@ In a terminal run:
   --max-gap MAX_GAP    Largest gap between motifs in bases which is still accepted and joined (default = 9 bases)   
   --min-unit MIN_UNIT   Minimum number of units in a tract to be reported (default = 3 units)
  --show-interruptions   Lists joined interruptions in the output         
-  --plot    Plots histogram of pure run length & interruption length
+  --plot    Plots histogram of pure run length & interruption length. Will only plot interruptions if --show-interruptions is used.
 
 The scanner will **automatically scan for the reverse complement of the motif.**
 
@@ -59,7 +59,7 @@ Two separate histograms will be output, summarising the distribution of:
 
 PNG files of the histograms will be saved to the project folder.
 
-### Sample Output
+## Sample Output
 This is a sample output run on a fasta file containing:  
 **GAAGAAGAA** *C* **GAAGAAGAAGAAGAAGAAGAA** (spaced for visual clarity)
   
