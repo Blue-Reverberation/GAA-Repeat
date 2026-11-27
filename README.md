@@ -61,31 +61,32 @@ PNG files of the histograms will be saved to the project folder.
 
 ### Sample Output
 This is a sample output run on a fasta file containing:  
-**GAAGAAGAA** *C* **GAAGAAGAAGAAGAAGAAGAA** (spaced for visual clarity)  
+**GAAGAAGAA** *C* **GAAGAAGAAGAAGAAGAAGAA** (spaced for visual clarity)
+  
 Based on the definitions above, there are:  
 3 GAA **units** in a row with no interruption, i.e. a **pure run** of length 3  
 1 C, an interruption of length 1  
-7 GAA **units** (or pure run 7)  
+7 GAA **units** (or pure run 7)    
 
 >python motif_scanner.py sample.fasta --motif GAA --show-interruptions
-
+  
 No max-gap parameter was specified, default = 9 bases
-No min-unit parameter was specified, default = 3 units
+No min-unit parameter was specified, default = 3 units  
 
 Output:
->TRACT #1
-start: 0
-end: 31
-span: 31
-units: 10
-longest pure run: 7
-reverse complement?: False 
->
->-Joined interruptions present- 
->
->Interruption start: 9
-Interruption end: 10
-Interruption span: 1
-sequence: C
-multiple of 3?: False 
+>TRACT #1  
+start: 0  
+end: 31  
+span: 31  
+units: 10  
+longest pure run: 7  
+reverse complement?: False   
+>  
+>-Joined interruptions present-   
+>  
+>Interruption start: 9  
+Interruption end: 10  
+Interruption span: 1  
+sequence: C  
+multiple of 3?: False   
 
