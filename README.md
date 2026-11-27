@@ -24,7 +24,9 @@ In a terminal run:
 ```--show-interruptions```   Lists joined interruptions in the output         
   ```--plot```    Plots histogram of pure run length & interruption length. Will only plot interruptions if --show-interruptions is used.
 
-The scanner will **automatically scan for the reverse complement of the motif.**
+The scanner will **automatically scan for the reverse complement of the motif.**  
+
+To sanity-check results, run ```pytest``` in the project directory, which checks the functions of the code against known answers, reporting an error if an unexpected answer is returned.  
 
 ## Output
 The output will include:
@@ -38,14 +40,14 @@ Each tract outputs the following information:
 ```units:```   (Number of motifs found)  
 ```longest pure run:```   (Highest number of motifs found with 0 interruptions)  
 ```reverse complement?:```  (Whether the tract is made up of the original motif or of its reverse complement)
->  
->```Joined interruptions present:```**[...]**  
+
+```Joined interruptions present:```**[...]**  
 
 
 ### 2. Every joined interruption within a tract ```[--show-interruptions]```
 
 Each joined interruption outputs the following information:
->```"Interruption start":```    (Start coordinates of interruption)     
+```"Interruption start":```    (Start coordinates of interruption)     
 ```"Interruption end"```   (End coordinates of iterruption)  
 ```"Interruption span":```   (Length of interruption in bases)  
 ```"sequence":```     (The interruption itself)  
@@ -86,10 +88,10 @@ span: 31
 units: 10  
 longest pure run: 7  
 reverse complement?: False   
->  
->-Joined interruptions present-   
->  
->Interruption start: 9  
+ 
+-Joined interruptions present-   
+  
+Interruption start: 9  
 Interruption end: 10  
 Interruption span: 1  
 sequence: C  

@@ -1,4 +1,9 @@
 from motif_scanner import indexed_match, join_units
+import Bio
+from Bio import SeqIO
+from Bio.Seq import Seq
+
+
 ## Empty Template - join_units()
 # "start": ,
 # "end": ,
@@ -13,6 +18,7 @@ from motif_scanner import indexed_match, join_units
 #     'sequence': , 
 #     'multiple_of_3': }
 #     ],
+# "reverse_complement": 
 # "reverse_complement": False
 def test_indexed_match_finds_two_runs():
     assert indexed_match("(?:GAA)+", "GAAGAATTGAA") == [(0, 6), (8, 11)]
@@ -108,3 +114,38 @@ def test_frameshift_flagged():
         "reverse_complement": False
         }
     ]
+
+def test_own_reverse_complement():
+    '''Additionally tests for non default (3) length motif math for entries such as "units".'''
+    reg_pure_runs = indexed_match("(?:AT)+", "ATATATATATATATATATAT")
+    reg_tracts = join_units(reg_pure_runs, 9, 3, "ATATATATATATATATATAT", False, "AT") 
+
+    assert reg_tracts == [{
+        "start": 0,                  
+        "end": 20,
+        "span": 20,
+        "units": 10, 
+        "longest_run": 10, 
+        "interruptions": [],
+        "reverse_complement": False
+    }]
+
+    # Repeat steps for complementary motif
+    revcomp_pure_runs = [] # Initialising empty list for negative result
+    revcomp_tracts = []
+
+    reverse_comp_motif = str(Seq("AT").reverse_complement()) 
+    if not reverse_comp_motif == "AT": # Checking for motifs which are their own reverse complement
+            revcomp_pure_runs = indexed_match("(?:"+reverse_comp_motif+")+", "ATATATATATATATATATAT")
+            revcomp_tracts = join_units(revcomp_pure_runs, 9, 3, "ATATATATATATATATATAT", True, reverse_comp_motif)
+
+    assert revcomp_pure_runs == []
+    assert revcomp_tracts == []
+
+
+
+
+
+                        
+        
+

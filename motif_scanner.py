@@ -184,39 +184,22 @@ if __name__ == "__main__": # Guarding
 
     test_data = SeqIO.read(args.fasta, "fasta") # Import data
     test_sequence = str(test_data.seq)          # Convert relevant information to string
-    #print("sequence:", test_sequence)
-
 
     reg_pure_runs = indexed_match("(?:"+args.motif+")+", test_sequence)   # Create list of pure runs
-    #print("runs:", pure_runs)
-    #print("args.motif:", args.motif)
-
     reg_tracts = join_units(reg_pure_runs, args.max_gap, args.min_unit, test_sequence, False, args.motif) # Create list of dictionaries
-    #print("reg_tracts:", reg_tracts)
 
     # Repeat steps for complementary motif
     reverse_comp_motif = str(Seq(args.motif).reverse_complement())    
-    #print("complementary motif:", reverse_comp_motif)
-    #print("equal?:", reverse_comp_motif == args.motif)
-
-    if not reverse_comp_motif == args.motif: # Checking for motifs which are their own reverse complement
-        revcomp_pure_runs = indexed_match("(?:"+reverse_comp_motif+")+", test_sequence)
-        #print("revcomp_pure_runs:", revcomp_pure_runs)
-
-        revcomp_tracts = join_units(revcomp_pure_runs, args.max_gap, args.min_unit, test_sequence, True, reverse_comp_motif)
-
-    #print("revcomp_tracts:", revcomp_tracts) 
 
 
     reg_span_data = [] # Initialise empty lists to hold data from dictionary – Will be used for histograms
     reg_unit_data = []
 
     reg_span_data, reg_unit_data, reg_pure_run_length_data, reg_interruption_length_data = clean_print(reg_tracts, args.show_interruptions) # Using clean_print to append data
-    # print("assigned span data:", reg_span_data)
-    # print("assigned unit data;", reg_unit_data)
 
-    revcomp_pure_run_length_data = []
+    revcomp_pure_run_length_data = [] # Initialise empty lists
     revcomp_interruption_length_data = []
+    
     if not reverse_comp_motif == args.motif: # Checking for motifs which are their own reverse complement
         revcomp_pure_runs = indexed_match("(?:"+reverse_comp_motif+")+", test_sequence)
         #print("revcomp_pure_runs:", revcomp_pure_runs)
@@ -227,18 +210,7 @@ if __name__ == "__main__": # Guarding
         revcomp_unit_data = []
         
         revcomp_span_data, revcomp_unit_data, revcomp_pure_run_length_data, revcomp_interruption_length_data = clean_print(revcomp_tracts, args.show_interruptions)
-        # print("assigned revcomp span data:", revcomp_span_data)
-        # print("assigned revcomp unit data:", revcomp_unit_data)
 
     plot_results(args.plot)
     
 
-## Todo
-# 1. Distinguish between revcomp and reg in dictionary   # Done
-# 2. Testing!   # Almost done
-# 3. README.md  # WIP
-# 4. Histogram for data     # Almost done
-    # i) Pure run Length
-    # ii) Interruption length
-# 5. Printing data cleanly  # Done!
-# 6. Automatic pytest   # In progress
