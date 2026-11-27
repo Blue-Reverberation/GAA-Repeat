@@ -29,9 +29,9 @@ The scanner will **automatically scan for the reverse complement of the motif.**
 ## Output
 The output will include:
 
-1. Every tract found greater than ```min_units``` units long  
+### 1. Every tract found greater than ```min_units``` units long  
 
-Each tract outputs the following information:
+Each tract outputs the following information:  
 ```start:```   (Start coordinates of tract, 0 based)  
 ```end:```    (End coordinates of tract, ends at last base)  
 ```span:```   (Length of tract in bases)  
@@ -42,7 +42,7 @@ Each tract outputs the following information:
 >```Joined interruptions present:```**[...]**  
 
 
-2. Every joined interruption within a tract ```[--show-interruptions]```
+### 2. Every joined interruption within a tract ```[--show-interruptions]```
 
 Each joined interruption outputs the following information:
 >```"Interruption start":```    (Start coordinates of interruption)     
@@ -51,13 +51,16 @@ Each joined interruption outputs the following information:
 ```"sequence":```     (The interruption itself)  
 ```"multiple of 3?":```    (If the interruption length is divisible by 3)  
   
-3. Histogram summarising data ```[--plot]```
+### 3. Histogram summarising data ```[--plot]```
 
 Two separate histograms will be output, summarising the distribution of:
 - Pure-run length
 - Interruption length
 
-PNG files of the histograms will be saved to the project folder.
+PNG files of the histograms will be saved to the project folder.  
+![alt text](image.png)  
+![alt text](image-1.png)   
+
 
 ## Sample Output
 This is a sample output run on a fasta file containing:  
@@ -68,7 +71,7 @@ Based on the definitions above, there are:
 1 C, an interruption of length 1  
 7 GAA **units** (or pure run 7)    
 
->python motif_scanner.py sample.fasta --motif GAA --show-interruptions
+>python motif_scanner.py sample.fasta --motif GAA --show-interruptions --plot
   
 No ```max-gap``` parameter was specified, default = 9 bases
 No ```min-unit``` parameter was specified, default = 3 units  

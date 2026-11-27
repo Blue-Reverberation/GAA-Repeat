@@ -171,7 +171,7 @@ def plot_results(args_plot):
         interruption_length_data = reg_interruption_length_data + revcomp_interruption_length_data
         if not interruption_length_data == []:
             plt.hist(interruption_length_data,
-                    bins=[x for x in range(min(interruption_length_data), max(interruption_length_data))])
+                    bins=[x - 0.5 for x in range(min(interruption_length_data), max(interruption_length_data) + 2)])
             plt.xlabel("Interruption length in bases")
             plt.ylabel("Number of interruptions")
             plt.savefig("interruption_lengths.png", dpi=150)
@@ -215,7 +215,8 @@ if __name__ == "__main__": # Guarding
     # print("assigned span data:", reg_span_data)
     # print("assigned unit data;", reg_unit_data)
 
-
+    revcomp_pure_run_length_data = []
+    revcomp_interruption_length_data = []
     if not reverse_comp_motif == args.motif: # Checking for motifs which are their own reverse complement
         revcomp_pure_runs = indexed_match("(?:"+reverse_comp_motif+")+", test_sequence)
         #print("revcomp_pure_runs:", revcomp_pure_runs)
