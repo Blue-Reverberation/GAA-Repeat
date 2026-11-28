@@ -103,3 +103,15 @@ Interruption span: 1
 sequence: C  
 multiple of 3?: False   
 ```
+
+## Known Issues
+
+### 1. Overlap  
+The current algorithm finds matches in:  
+"ATATAATAATA"  
+As:
+```[(0,3), (5, 11)]```
+Whereas the true match should be:  
+```[(2,11)]```  
+This is due to the algorithm currently not taking overlapping matches into consideration.   
+A better algorithm is the primary focus of the project currently.
