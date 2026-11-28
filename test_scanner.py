@@ -136,6 +136,10 @@ def test_own_reverse_complement():
             ],
         "reverse_complement": False
     }]
+    revcomp_units_per_tract, revcomp_interruption_length_data = scan_print_revcomp_motif("ATATATTATATAT", "AT", 9, 3, True)
+    assert revcomp_units_per_tract == []
+    assert revcomp_interruption_length_data == []
+
 
 
 def test_check_lower_case_sequence(tmp_path):

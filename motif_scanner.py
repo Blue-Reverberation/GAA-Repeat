@@ -32,11 +32,33 @@ from Bio.Seq import Seq
 def indexed_match(motif, sequence): # Function to find motifs & locations
     '''Returns list of (start, end) coordinates, greedy algorithm '''
     #print("index motif:", motif)
-    reglist = [] # Initialise empty list
+    matchlist = [] # Initialise empty list
     for m in re.finditer(motif, sequence): # For each match of a given motif in the sequence,
-        reglist.append((m.start(), m.end())) # Append the start and end coordinates of each found pure run
+        matchlist.append((m.start(), m.end())) # Append the start and end coordinates of each found pure run
+    
+    # pattern = re.compile("(?:"+motif+")+")
+    # for i in range (0, len(sequence)):
+    #     match = pattern.match(sequence, i)
+    #     if match != None:
+    #         matchlist.append(match.span())
 
-    return reglist
+    # matchlist_test = [(0, 3), (2, 11), (5, 11), (8, 11)]
+    # used_positions = []
+    # match_lengths = []
+
+    # for i in matchlist_test:
+    #     s,e = i
+    #     length = e - s
+    #     match_lengths.append((length, i))
+    # # [(3, (0, 3)), (9, (2, 11)), (6, (5, 11)), (3, (8, 11))]
+    
+
+    # max_length = max(match_lengths) # (9, (2, 11))
+
+
+
+    return matchlist
+    
 
 def tract_builder(runs, sequence, is_complement, motif): # Builds tracts into a dictionary from list of runs
     '''Builds tract information dictionary from a single tract, including a nested interruption dictionary for a tract if it includes one'''
@@ -203,34 +225,35 @@ def import_fasta(path):
     sequence = str(file_data.seq).upper()         # Convert relevant information to string
     return sequence
 
-def scan_print_reg_motif(sequence, motif):
+def scan_print_reg_motif(sequence, motif, max_gap, min_unit, show_interruptions):
     reg_pure_runs = indexed_match("(?:"+motif+")+", sequence)   # Create list of pure runs
-    reg_tracts = join_units(reg_pure_runs, args.max_gap, args.min_unit, sequence, False, motif) # Create list of tract dictionaries
+    reg_tracts = join_units(reg_pure_runs, max_gap, min_unit, sequence, False, motif) # Create list of tract dictionaries
 
     reg_span_data = [] # Initialise empty lists to hold data from dictionary – Will be used for histograms
     reg_units_per_tract = []
 
-    reg_span_data, reg_units_per_tract, reg_interruption_length_data = clean_print(reg_tracts, args.show_interruptions) # Using clean_print to append data
+    reg_span_data, reg_units_per_tract, reg_interruption_length_data = clean_print(reg_tracts, show_interruptions) # Using clean_print to append data
     return reg_units_per_tract, reg_interruption_length_data
 
 
-def scan_print_revcomp_motif(sequence, motif):
+def scan_print_revcomp_motif(sequence, motif, max_gap, min_unit, show_interruptions):
     reverse_comp_motif = str(Seq(motif).reverse_complement().upper())  
     revcomp_pure_run_length_data = [] # Initialise empty lists
     revcomp_span_data = []
     revcomp_units_per_tract = []
-    
+    revcomp_interruption_length_data = []
+
     if not reverse_comp_motif == motif: # Checking for motifs which are their own reverse complement
         revcomp_pure_runs = indexed_match("(?:"+reverse_comp_motif+")+", sequence)
-        revcomp_tracts = join_units(revcomp_pure_runs, args.max_gap, args.min_unit, sequence, True, reverse_comp_motif)
+        revcomp_tracts = join_units(revcomp_pure_runs, max_gap, min_unit, sequence, True, reverse_comp_motif)
 
-        revcomp_span_data, revcomp_units_per_tract, revcomp_interruption_length_data = clean_print(revcomp_tracts, args.show_interruptions)
+        revcomp_span_data, revcomp_units_per_tract, revcomp_interruption_length_data = clean_print(revcomp_tracts, show_interruptions)
     return revcomp_units_per_tract, revcomp_interruption_length_data
 
 def main():
     sequence = import_fasta(args.fasta)
-    reg_units_per_tract, reg_interruption_length_data = scan_print_reg_motif(sequence, args.motif)
-    revcomp_units_per_tract, revcomp_interruption_length_data = scan_print_revcomp_motif(sequence, args.motif)
+    reg_units_per_tract, reg_interruption_length_data = scan_print_reg_motif(sequence, args.motif, args.max_gap, args.min_unit, args.show_interruptions)
+    revcomp_units_per_tract, revcomp_interruption_length_data = scan_print_revcomp_motif(sequence, args.motif, args.max_gap, args.min_unit, args.show_interruptions)
 
     plot_results(args.plot, reg_units_per_tract, revcomp_units_per_tract, reg_interruption_length_data, revcomp_interruption_length_data)
 
