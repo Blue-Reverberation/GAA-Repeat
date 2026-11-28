@@ -1,4 +1,4 @@
-from motif_scanner import indexed_match, join_units
+from motif_scanner import indexed_match, join_units, import_fasta, scan_print_reg_motif, scan_print_revcomp_motif
 import Bio
 from Bio import SeqIO
 from Bio.Seq import Seq
@@ -116,31 +116,35 @@ def test_frameshift_flagged():
     ]
 
 def test_own_reverse_complement():
-    '''Additionally tests for non default (3) length motif math for entries such as "units".'''
-    reg_pure_runs = indexed_match("(?:AT)+", "ATATATATATATATATATAT")
-    reg_tracts = join_units(reg_pure_runs, 9, 3, "ATATATATATATATATATAT", False, "AT") 
-
-    assert reg_tracts == [{
-        "start": 0,                  
-        "end": 20,
-        "span": 20,
-        "units": 10, 
-        "longest_run": 10, 
-        "interruptions": [],
+    sequence = "ATATATTATATAT"
+    motif = "AT"
+    runs = indexed_match("(?:AT)+", sequence)
+    assert runs == [(0,6), (7,13)]
+    assert join_units(runs, 3, 0, sequence, False, motif) == [{
+        "start": 0,
+        "end": 13,
+        "span": 13,
+        "units": 6, 
+        "longest_run": 3, 
+        "interruptions": 
+            [
+            {'start': 6, 
+            'end': 7,
+            'length': 1, 
+            'sequence': 'T', 
+            'multiple_of_3': False}
+            ],
         "reverse_complement": False
     }]
 
-    # Repeat steps for complementary motif
-    revcomp_pure_runs = [] # Initialising empty list for negative result
-    revcomp_tracts = []
 
-    reverse_comp_motif = str(Seq("AT").reverse_complement()) 
-    if not reverse_comp_motif == "AT": # Checking for motifs which are their own reverse complement
-            revcomp_pure_runs = indexed_match("(?:"+reverse_comp_motif+")+", "ATATATATATATATATATAT")
-            revcomp_tracts = join_units(revcomp_pure_runs, 9, 3, "ATATATATATATATATATAT", True, reverse_comp_motif)
+def test_check_lower_case_sequence(tmp_path):
+    fasta = tmp_path/"lower.fasta"
+    fasta.write_text(">lower\ngaagaagaa\n")
+    sequence = import_fasta(fasta)
+    assert sequence == "GAAGAAGAA"
 
-    assert revcomp_pure_runs == []
-    assert revcomp_tracts == []
+
 
 
 

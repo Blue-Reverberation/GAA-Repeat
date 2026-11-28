@@ -116,7 +116,6 @@ def parse_args(argv=None): # Argument parser
         if args.min_unit < 1: # Check for 0 or negative
             parser.error("--min-unit must be at least 1")
 
-
         return args
 
 def clean_print(list_of_tracts, show_interruptions):
@@ -144,7 +143,6 @@ def clean_print(list_of_tracts, show_interruptions):
         curr_units = tract["units"]
         print("units:" ,curr_units)
         unit_data.append(curr_units)
-        pure_run_length_data.append(curr_units)
 
         curr_longest_run = tract["longest_run"]
         print("longest pure run:" ,curr_longest_run)
@@ -171,15 +169,15 @@ def clean_print(list_of_tracts, show_interruptions):
 
     #print("span data:", span_data)
     #print("unit data:", unit_data)
-    return span_data, unit_data, pure_run_length_data, interruption_length_data
+    return span_data, unit_data, interruption_length_data
 
 
-def plot_results(args_plot):
+def plot_results(args_plot, reg_units_per_tract, revcomp_units_per_tract, reg_interruption_length_data, revcomp_interruption_length_data):
     if args_plot == True:
         import matplotlib
         matplotlib.use("Agg")
 
-        repeat_units_per_tract = reg_pure_run_length_data + revcomp_pure_run_length_data
+        repeat_units_per_tract = reg_units_per_tract + revcomp_units_per_tract
         if not repeat_units_per_tract == []:
             plt.hist(repeat_units_per_tract,
                     bins=[x - 0.5 for x in range(min(repeat_units_per_tract), max(repeat_units_per_tract) + 2)])
@@ -199,39 +197,46 @@ def plot_results(args_plot):
             plt.close()
             print("Saved interruption_lengths.png to project directory")
 
+
+def import_fasta(path):
+    file_data = SeqIO.read(path, "fasta") # Import data
+    sequence = str(file_data.seq).upper()         # Convert relevant information to string
+    return sequence
+
+def scan_print_reg_motif(sequence, motif):
+    reg_pure_runs = indexed_match("(?:"+motif+")+", sequence)   # Create list of pure runs
+    reg_tracts = join_units(reg_pure_runs, args.max_gap, args.min_unit, sequence, False, motif) # Create list of tract dictionaries
+
+    reg_span_data = [] # Initialise empty lists to hold data from dictionary – Will be used for histograms
+    reg_units_per_tract = []
+
+    reg_span_data, reg_units_per_tract, reg_interruption_length_data = clean_print(reg_tracts, args.show_interruptions) # Using clean_print to append data
+    return reg_units_per_tract, reg_interruption_length_data
+
+
+def scan_print_revcomp_motif(sequence, motif):
+    reverse_comp_motif = str(Seq(motif).reverse_complement().upper())  
+    revcomp_pure_run_length_data = [] # Initialise empty lists
+    revcomp_span_data = []
+    revcomp_units_per_tract = []
+    
+    if not reverse_comp_motif == motif: # Checking for motifs which are their own reverse complement
+        revcomp_pure_runs = indexed_match("(?:"+reverse_comp_motif+")+", sequence)
+        revcomp_tracts = join_units(revcomp_pure_runs, args.max_gap, args.min_unit, sequence, True, reverse_comp_motif)
+
+        revcomp_span_data, revcomp_units_per_tract, revcomp_interruption_length_data = clean_print(revcomp_tracts, args.show_interruptions)
+    return revcomp_units_per_tract, revcomp_interruption_length_data
+
+def main():
+    sequence = import_fasta(args.fasta)
+    reg_units_per_tract, reg_interruption_length_data = scan_print_reg_motif(sequence, args.motif)
+    revcomp_units_per_tract, revcomp_interruption_length_data = scan_print_revcomp_motif(sequence, args.motif)
+
+    plot_results(args.plot, reg_units_per_tract, revcomp_units_per_tract, reg_interruption_length_data, revcomp_interruption_length_data)
+
 if __name__ == "__main__": # Guarding
 
     args = parse_args()
-
-    test_data = SeqIO.read(args.fasta, "fasta") # Import data
-    test_sequence = str(test_data.seq)          # Convert relevant information to string
-
-    reg_pure_runs = indexed_match("(?:"+args.motif+")+", test_sequence)   # Create list of pure runs
-    reg_tracts = join_units(reg_pure_runs, args.max_gap, args.min_unit, test_sequence, False, args.motif) # Create list of dictionaries
-
-    # Repeat steps for complementary motif
-    reverse_comp_motif = str(Seq(args.motif).reverse_complement())    
-
-
-    reg_span_data = [] # Initialise empty lists to hold data from dictionary – Will be used for histograms
-    reg_unit_data = []
-
-    reg_span_data, reg_unit_data, reg_pure_run_length_data, reg_interruption_length_data = clean_print(reg_tracts, args.show_interruptions) # Using clean_print to append data
-
-    revcomp_pure_run_length_data = [] # Initialise empty lists
-    revcomp_interruption_length_data = []
-    
-    if not reverse_comp_motif == args.motif: # Checking for motifs which are their own reverse complement
-        revcomp_pure_runs = indexed_match("(?:"+reverse_comp_motif+")+", test_sequence)
-        #print("revcomp_pure_runs:", revcomp_pure_runs)
-
-        revcomp_tracts = join_units(revcomp_pure_runs, args.max_gap, args.min_unit, test_sequence, True, reverse_comp_motif)
-        # Repeat for reverse complement
-        revcomp_span_data = []
-        revcomp_unit_data = []
-        
-        revcomp_span_data, revcomp_unit_data, revcomp_pure_run_length_data, revcomp_interruption_length_data = clean_print(revcomp_tracts, args.show_interruptions)
-
-    plot_results(args.plot)
+    main()
     
 
